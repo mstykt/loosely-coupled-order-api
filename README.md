@@ -1,5 +1,7 @@
 #Loosely Coupled Order Api
 
+![Architecture](https://raw.githubusercontent.com/mstykt/loosely-coupled-order-api/statics/statics/lc-arch-1.png)
+
 All dependencies and backing services dockerized and mocked. 
 <br />
 tips: productId '25' will give timeout. Feign timeout set 2 second. You can change settings and see differences
