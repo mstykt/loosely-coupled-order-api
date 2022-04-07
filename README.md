@@ -1,4 +1,4 @@
-#Loosely Coupled Order Api
+# Loosely Coupled Order Api
 
 ![Architecture](https://raw.githubusercontent.com/mstykt/loosely-coupled-order-api/statics/statics/lc-arch-1.png)
 
@@ -14,11 +14,11 @@ Project up:
 
 Now you are ready to run project stand alone
 
-####Sample requests:
+#### Sample requests:
 
 Ordinary request and response:
 
-request:
+**request:**
 <br />
 ```
 curl -X POST 'http://localhost:8080/orders' \
@@ -33,7 +33,7 @@ curl -X POST 'http://localhost:8080/orders' \
 }'
 ```
 
-response:
+**response:**
 <br />
 ```
 {
@@ -51,7 +51,7 @@ response:
 }
 ```
 
-Timeout request:
+**Timeout request:**
 
 ```
 curl -X POST 'http://localhost:8080/orders' \
@@ -66,7 +66,7 @@ curl -X POST 'http://localhost:8080/orders' \
 }'
 ```
 
-Timeout response:
+**Timeout response:**
 
 ```
 {
@@ -80,7 +80,7 @@ Timeout response:
 you will get read timeout exception, product mock set timeout for productId: 25
 
 ---
-####Cache:
+#### Cache:
 
 when you call
 
