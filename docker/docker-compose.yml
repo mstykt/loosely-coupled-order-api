@@ -1,0 +1,88 @@
+version: '3.9'
+
+services:
+  order-postgres:
+    image: postgres:13
+    container_name: order-postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./db/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+    environment:
+      - POSTGRES_USER=order_api
+      - POSTGRES_PASSWORD=123
+      - POSTGRES_DB=order_db
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-q", "-d", "order_db", "-U", "order_api" ]
+      timeout: 5s
+      interval: 2s
+      retries: 3
+  order-liquibase:
+    image: liquibase/liquibase:latest
+    container_name: order-liquibase
+    volumes:
+      - ./../db:/liquibase/changelog
+    command: "--url=jdbc:postgresql://order-postgres:5432/order_db?currentSchema=sch_order --changeLogFile=master.changelog.xml --username=order_api --password=123 update"
+    depends_on:
+      - order-postgres
+  order-redis:
+    image: redis:latest
+    container_name: order-redis
+    command: redis-server --requirepass redis-pass --appendonly yes
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli","ping"]
+      interval: 2s
+      timeout: 3s
+      retries: 2
+  seller-api-wiremock:
+    image: wiremock/wiremock
+    container_name: seller-wiremock
+    ports:
+      - "8085:8080"
+    volumes:
+      - ./wiremock/seller-api:/home/wiremock
+    healthcheck:
+      test: curl --fail -s http://localhost:8085/__admin/ || exit 1
+      interval: 2s
+      timeout: 5s
+      retries: 2
+  product-api-wiremock:
+    image: wiremock/wiremock
+    container_name: product-wiremock
+    ports:
+      - "8086:8080"
+    volumes:
+      - ./wiremock/product-api:/home/wiremock
+    healthcheck:
+      test: curl --fail -s http://localhost:8086/__admin/ || exit 1
+      interval: 2s
+      timeout: 50s
+      retries: 2
+  order-zookeeper:
+    image: wurstmeister/zookeeper
+    container_name: order-zookeeper
+    ports:
+      - "2181:2181"
+  order-kafka:
+    image: wurstmeister/kafka
+    container_name: order-kafka
+    ports:
+      - "9092:9092"
+    expose:
+      - "9093"
+    environment:
+      KAFKA_ADVERTISED_LISTENERS: INSIDE://order-kafka:9093,OUTSIDE://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
+      KAFKA_LISTENERS: INSIDE://0.0.0.0:9093,OUTSIDE://0.0.0.0:9092
+      KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
+      KAFKA_ZOOKEEPER_CONNECT: order-zookeeper:2181
+      KAFKA_CREATE_TOPICS: "order.created:3:1"
+    healthcheck:
+      test: [ "CMD", "nc", "-vz", "localhost", "9092" ]
+      interval: 5s
+      timeout: 10s
+      retries: 4
+    depends_on:
+      - order-zookeeper

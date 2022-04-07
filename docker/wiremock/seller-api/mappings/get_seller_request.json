@@ -1,0 +1,13 @@
+{
+  "request": {
+    "urlPathPattern": "/sellers/([0-9]+)",
+    "method" : "GET"
+  },
+  "response": {
+    "status" : 200,
+    "bodyFileName" : "get_seller_response.json",
+    "headers" : {
+      "Content-Type" : "application/json"
+    }
+  }
+}

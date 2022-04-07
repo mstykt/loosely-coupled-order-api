@@ -1,0 +1,47 @@
+<?xml version="1.1" encoding="utf-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <property name="maxValue" value="9223372036854775807" dbms="postgresql"/>
+
+    <changeSet id="2021-03-03 18:26" author="mesut.yakut">
+        <createSequence sequenceName="seq_order" cacheSize="20" cycle="true"
+                        incrementBy="50" maxValue="${maxValue}"
+                        minValue="1" startValue="1"/>
+    </changeSet>
+
+    <changeSet id="2021-03-03 18:27" author="mesut.yakut">
+        <createTable tableName="order">
+            <column name="ID" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="BUYER_ID" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PRODUCT_ID" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PRODUCT_FIELD1" type="VARCHAR(50)" />
+            <column name="PRODUCT_FIELD2" type="VARCHAR(50)" />
+            <column name="SELLER_ID" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="SELLER_FIELD1" type="VARCHAR(50)" />
+            <column name="SELLER_FIELD2" type="VARCHAR(50)" />
+            <column name="ORDER_FIELD1" type="VARCHAR(50)" />
+            <column name="ORDER_FIELD2" type="VARCHAR(50)" />
+            <column name="QUANTITY" type="INT" />
+        </createTable>
+    </changeSet>
+
+    <changeSet id="2021-03-03 18:28" author="mesut.yakut">
+        <createIndex clustered="true" tableName="order" indexName="BUYER_ID_INDEX">
+            <column name="BUYER_ID"/>
+        </createIndex>
+        <createIndex clustered="true" tableName="order" indexName="SELLER_ID_INDEX">
+            <column name="SELLER_ID"/>
+        </createIndex>
+    </changeSet>
+</databaseChangeLog>
