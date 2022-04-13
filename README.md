@@ -2,7 +2,7 @@
 
 ![Architecture](https://raw.githubusercontent.com/mstykt/loosely-coupled-order-api/statics/statics/lc-arch-1.png)
 
-You can see loosely coupling environment article on [loosely coupling environment article](https://medium.com/@mesutyakut/loosely-coupled-microservices-2dabebbd3112 "medium")
+You can see loosely coupling environment article on [medium](https://medium.com/@mesutyakut/loosely-coupled-microservices-2dabebbd3112 "loosely coupling environment article")
 
 <br />
 All dependencies and backing services dockerized and mocked. 
