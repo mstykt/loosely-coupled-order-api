@@ -2,6 +2,9 @@
 
 ![Architecture](https://raw.githubusercontent.com/mstykt/loosely-coupled-order-api/statics/statics/lc-arch-1.png)
 
+You can see loosely coupling environment article on [loosely coupling environment article](https://medium.com/@mesutyakut/loosely-coupled-microservices-2dabebbd3112 "medium")
+
+<br />
 All dependencies and backing services dockerized and mocked. 
 <br />
 tips: productId '25' will give timeout. Feign timeout set 2 second. You can change settings and see differences
