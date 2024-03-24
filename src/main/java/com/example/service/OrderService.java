@@ -32,10 +32,4 @@ public class OrderService {
 
         return repo.save(order);
     }
-
-    public Order findById(Long id) {
-
-        return repo.findById(id)
-                .orElseThrow(() -> new RuntimeException("cannot find order with given id: " + id));
-    }
 }

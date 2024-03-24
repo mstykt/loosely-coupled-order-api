@@ -3,7 +3,6 @@ package com.example.service;
 import com.example.mapper.OrderMapper;
 import com.example.model.OrderSummary;
 import com.example.persistence.entity.Order;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
