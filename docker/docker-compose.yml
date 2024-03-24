@@ -22,6 +22,9 @@ services:
     container_name: order-liquibase
     volumes:
       - ./../db:/liquibase/changelog
+      - ./../db/master.changelog.xml:/liquibase/master.changelog.xml
+      - ./../db/changelogs/v-0.1.xml:/liquibase/changelogs/v-0.1.xml
+      - ./../db/changelogs/v-0.2.xml:/liquibase/changelogs/v-0.2.xml
     command: "--url=jdbc:postgresql://order-postgres:5432/order_db?currentSchema=sch_order --changeLogFile=master.changelog.xml --username=order_api --password=123 update"
     depends_on:
       - order-postgres
@@ -32,7 +35,7 @@ services:
     ports:
       - "6379:6379"
     healthcheck:
-      test: ["CMD", "redis-cli","ping"]
+      test: [ "CMD", "redis-cli","ping" ]
       interval: 2s
       timeout: 3s
       retries: 2
@@ -61,28 +64,48 @@ services:
       timeout: 50s
       retries: 2
   order-zookeeper:
-    image: wurstmeister/zookeeper
+    image: confluentinc/cp-zookeeper:latest
     container_name: order-zookeeper
+    platform: linux/amd64
     ports:
       - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
   order-kafka:
-    image: wurstmeister/kafka
+    image: confluentinc/cp-kafka:latest
     container_name: order-kafka
     ports:
-      - "9092:9092"
-    expose:
-      - "9093"
+      - "49816:9092"
     environment:
-      KAFKA_ADVERTISED_LISTENERS: INSIDE://order-kafka:9093,OUTSIDE://localhost:9092
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
-      KAFKA_LISTENERS: INSIDE://0.0.0.0:9093,OUTSIDE://0.0.0.0:9092
-      KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
+      KAFKA_BROKER_ID: 1
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,INTERNAL:PLAINTEXT
+      KAFKA_LISTENERS: PLAINTEXT://order-kafka:9092,INTERNAL://order-kafka:29092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:49816,INTERNAL://order-kafka:29092
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
       KAFKA_ZOOKEEPER_CONNECT: order-zookeeper:2181
-      KAFKA_CREATE_TOPICS: "order.created:3:1"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: '1'
+      KAFKA_CREATE_TOPICS: "order.created:1:1"
     healthcheck:
-      test: [ "CMD", "nc", "-vz", "localhost", "9092" ]
+      test: [ "CMD", "nc", "-vz", "localhost", "49816" ]
       interval: 5s
       timeout: 10s
       retries: 4
     depends_on:
       - order-zookeeper
+  init-kafka:
+    image: confluentinc/cp-kafka:latest
+    depends_on:
+      - order-kafka
+    entrypoint: [ '/bin/sh', '-c' ]
+    command: |
+      "
+      # blocks until kafka is reachable
+      kafka-topics --bootstrap-server order-kafka:29092 --list
+      
+      echo -e 'Creating kafka topics'
+      kafka-topics --bootstrap-server order-kafka:29092 --create --if-not-exists --topic order.created --replication-factor 1 --partitions 1
+      # kafka-topics --bootstrap-server kafka:29092 --create --if-not-exists --topic my-topic-2 --replication-factor 1 --partitions 1
+      
+      echo -e 'Successfully created the following topics:'
+      kafka-topics --bootstrap-server order-kafka:29092 --list
+      "

@@ -1,5 +1,6 @@
 package com.example.mapper;
 
+import com.example.model.OrderSummary;
 import com.example.model.response.OrderResponse;
 import com.example.model.response.OrderSummaryResponse;
 import com.example.persistence.entity.Order;
@@ -10,5 +11,7 @@ public interface OrderMapper {
 
     OrderResponse toOrderResponse(Order order);
 
-    OrderSummaryResponse toOrderSummaryResponse(Order order);
+    OrderSummary toOrderSummary(Order order);
+
+    OrderSummaryResponse toOrderSummaryResponse(OrderSummary orderSummary);
 }

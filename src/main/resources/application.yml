@@ -4,19 +4,13 @@ spring:
     username: order_api
     password: 123
     driver-class-name: org.postgresql.Driver
-  cache:
-    type: redis
-    redis:
-      time-to-live: 60000
-      use-key-prefix: true
-    cache-names: orders
   redis:
     password: 'redis-pass'
     host: localhost
     port: 6379
   kafka:
     producer:
-      bootstrap-servers: localhost:9092
+      bootstrap-servers: localhost:49816
       key-serializer: org.springframework.kafka.support.serializer.JsonSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 
